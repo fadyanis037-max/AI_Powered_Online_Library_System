@@ -105,7 +105,7 @@ Get-NetTCPConnection -LocalPort 8501 -ErrorAction SilentlyContinue | ForEach-Obj
 ## Notes
 - For recommendations, book text comes from `description` + `content`.
 - Summarization prefers `content`, falls back to `description`.
-- On first run, model weights are downloaded; this may take a few minutes.
+- On first run, model weights are downloaded during backend startup, so expect a longer boot time rather than a slow first request.
 
 ## License
 MIT

@@ -1,8 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
-from config import config 
 from backend.config import config
 from backend.models import db
+from backend.ai_engine.summarizer import preload_summarizer
+from backend.ai_engine.recommender import preload_recommender
 from backend.routes import api_bp
 
 
@@ -23,6 +24,9 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        # Preload AI models to avoid first-request latency
+        preload_summarizer()
+        preload_recommender()
 
     return app
 

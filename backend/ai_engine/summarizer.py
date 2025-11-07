@@ -14,6 +14,11 @@ def get_bart_summarizer():
     )
 
 
+def preload_summarizer() -> None:
+    """Ensure the summarizer model is loaded into memory."""
+    get_bart_summarizer()
+
+
 def summarize_text(text: str, max_length: int = 130, min_length: int = 30) -> Optional[str]:
     if not text or not text.strip():
         return None

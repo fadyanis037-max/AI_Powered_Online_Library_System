@@ -10,6 +10,11 @@ def get_embedding_model() -> SentenceTransformer:
     return SentenceTransformer("all-MiniLM-L6-v2")
 
 
+def preload_recommender() -> None:
+    """Ensure the sentence transformer is loaded into memory."""
+    get_embedding_model()
+
+
 def embed_texts(texts: List[str]) -> np.ndarray:
     model = get_embedding_model()
     return np.array(model.encode(texts, normalize_embeddings=True))
