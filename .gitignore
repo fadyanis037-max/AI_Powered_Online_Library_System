@@ -1,4 +1,29 @@
 .venv/
+
+# Python bytecode and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local SQLite databases
+library.db
+*.db
+*.sqlite*
+
+# Test and tool caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Streamlit local config/cache (if created here)
+.streamlit/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
 library.db
 *.db
 *.sqlite*
