@@ -6,6 +6,18 @@ import streamlit as st
 
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:5000")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+USER_PASSWORD = os.environ.get("USER_PASSWORD", "user")
+
+
+def _init_session():
+    if "auth_username" not in st.session_state:
+        st.session_state["auth_username"] = None
+    if "auth_role" not in st.session_state:
+        st.session_state["auth_role"] = "user"  # 'user' or 'admin'
+    if "view_mode" not in st.session_state:
+        st.session_state["view_mode"] = "user"  # UI mode; admin can switch
 
 
 def fetch_books(query: Optional[str] = None):
@@ -72,9 +84,58 @@ def search_by_description(description: str, top_k: int = 5):
 def main():
     st.set_page_config(page_title="AI-Powered Online Library", layout="wide")
     st.title("AI-Powered Online Library System")
+    _init_session()
 
     # Sidebar controls
     with st.sidebar:
+        # Auth & Mode
+        st.header("Account & Mode")
+        if st.session_state["auth_username"]:
+            st.success(f"Signed in as {st.session_state['auth_username']} ({st.session_state['auth_role']})")
+            if st.session_state["auth_role"] == "admin":
+                st.session_state["view_mode"] = st.radio(
+                    "View mode",
+                    options=["admin", "user"],
+                    index=0 if st.session_state.get("view_mode") == "admin" else 1,
+                    horizontal=True,
+                    key="mode_switch",
+                )
+            else:
+                st.session_state["view_mode"] = "user"
+            if st.button("Sign out"):
+                st.session_state["auth_username"] = None
+                st.session_state["auth_role"] = "user"
+                st.session_state["view_mode"] = "user"
+                st.experimental_rerun()
+        else:
+            login_as = st.selectbox("Login as", ["user", "admin"], index=0)
+            if login_as == "admin":
+                username = st.text_input("Username", value=ADMIN_USERNAME, disabled=True)
+            else:
+                username = st.text_input("Username")
+            password = st.text_input("Password", type="password")
+            if st.button("Sign in"):
+                if not username.strip():
+                    st.warning("Please enter a username")
+                elif login_as == "admin":
+                    if username.strip() == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+                        st.session_state["auth_username"] = ADMIN_USERNAME
+                        st.session_state["auth_role"] = "admin"
+                        st.session_state["view_mode"] = "admin"
+                        st.experimental_rerun()
+                    else:
+                        st.error("Invalid admin credentials")
+                else:
+                    if password == USER_PASSWORD:
+                        st.session_state["auth_username"] = username.strip()
+                        st.session_state["auth_role"] = "user"
+                        st.session_state["view_mode"] = "user"
+                        st.experimental_rerun()
+                    else:
+                        st.error("Invalid user password")
+
+        is_admin = st.session_state.get("view_mode") == "admin"
+
         st.header("Search & Actions")
         query = st.text_input("Search books (text search)")
         st.write("Backend:", BACKEND_URL)
@@ -127,10 +188,13 @@ def main():
         if not books:
             st.info("No books found.")
         for b in books:
-            with st.expander(f"{b['title']} — {b['author']} ({b.get('genre') or 'Unknown'})"):
+            with st.expander(f"{b['title']} - {b['author']} ({b.get('genre') or 'Unknown'})"):
                 st.caption(b.get('created_at', ''))
                 st.write(b.get('description') or "No description.")
-                c1, c2 = st.columns(2)
+                if st.session_state.get("view_mode") == "admin":
+                    c1, c2, c3 = st.columns(3)
+                else:
+                    c1, c2 = st.columns(2)
                 with c1:
                     if st.button("Summarize", key=f"sum-{b['id']}"):
                         with st.spinner("Summarizing with BART..."):
@@ -147,6 +211,15 @@ def main():
                                 res = recommend_books(b['id'])
                                 st.session_state[f"recs-{b['id']}"] = res.get('recommendations', [])
                                 st.success("Done")
+                            except Exception as e:
+                                st.error(f"Failed: {e}")
+                if st.session_state.get("view_mode") == "admin":
+                    with c3:
+                        if st.button("Delete", key=f"del-{b['id']}"):
+                            try:
+                                delete_book(b['id'])
+                                st.warning("Book deleted")
+                                st.session_state["refresh_counter"] = st.session_state.get("refresh_counter", 0) + 1
                             except Exception as e:
                                 st.error(f"Failed: {e}")
 

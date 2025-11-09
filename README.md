@@ -2,6 +2,16 @@
 
 An end-to-end Python project featuring a Flask backend with SQLite, AI features (BART summarization and Sentence-Transformer recommendations), and a Streamlit frontend.
 
+## Admin/User Modes
+- Sign in from the sidebar:
+  - User mode: pick "user", enter a username and the user password. Can view, search, summarize, and get recommendations.
+  - Admin mode: pick "admin"; username is fixed to `ADMIN_USERNAME` (default `admin`), and you must enter the admin password. Enables admin actions (e.g., delete books) and a toggle to switch between Admin/User views.
+- Credentials come from environment variables:
+  - `USER_PASSWORD` (default: `user`)
+  - `ADMIN_USERNAME` (default: `admin`)
+  - `ADMIN_PASSWORD` (default: `admin`)
+- Example (PowerShell):
+  - `$env:USER_PASSWORD = "user-pass"; $env:ADMIN_USERNAME = "admin"; $env:ADMIN_PASSWORD = "admin-pass"; streamlit run app_ui.py`
 ## Features
 - Flask REST API with CRUD for books
 - SQLite via SQLAlchemy; auto-creates `library.db`
@@ -74,6 +84,9 @@ python -m backend.seed_data
 ### 4) Run the Streamlit UI in another terminal(with activatied venv)
 
 ```powershell
+-activate the env again if not activated 
+.\.venv\Scripts\Activate.ps1
+
 streamlit run app_ui.py
 ```
 
@@ -107,7 +120,7 @@ Get-NetTCPConnection -LocalPort 8501 -ErrorAction SilentlyContinue | ForEach-Obj
 ## Features
 
 ### AI-Powered Search
-- Users can describe what they're looking for in natural language
+- Users can describe what they're looking for in natural language(scroll up after press Find relevant books)
 - The system uses Sentence Transformers to find the most relevant books based on semantic similarity
 - Results are ranked by relevance score
 
@@ -121,9 +134,7 @@ Get-NetTCPConnection -LocalPort 8501 -ErrorAction SilentlyContinue | ForEach-Obj
 - For recommendations, book text comes from `description` + `content`.
 - Summarization prefers `content`, falls back to `description`.
 - On first run, model weights are downloaded during backend startup, so expect a longer boot time rather than a slow first request.
-- AI models (BART and Sentence Transformers) are preloaded at startup to minimize user wait time.
+- Models download on first use. The summarizer preloads in the background after startup; the recommender is initialized at startup for snappy recommendations.
 
 ## License
 MIT
-
-
