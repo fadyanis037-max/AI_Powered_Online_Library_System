@@ -2,16 +2,26 @@
 
 An end-to-end Python project featuring a Flask backend with SQLite, AI features (BART summarization and Sentence-Transformer recommendations), and a Streamlit frontend.
 
+## Credentials (Quick Start)
+- Admin
+  - Username: `admin`
+  - Password: value of `ADMIN_PASSWORD` (default: `admin`)
+- User
+  - Username: `user`
+  - Password: value of `USER_PASSWORD` (default: `1234`)
+
+Change passwords via environment variables before launching the UI:
+- PowerShell example: `$env:USER_PASSWORD = "1234"; $env:ADMIN_PASSWORD = "admin-pass"; streamlit run app_ui.py`
+
 ## Admin/User Modes
 - Sign in from the sidebar:
-  - User mode: pick "user", enter a username and the user password. Can view, search, summarize, and get recommendations.
-  - Admin mode: pick "admin"; username is fixed to `ADMIN_USERNAME` (default `admin`), and you must enter the admin password. Enables admin actions (e.g., delete books) and a toggle to switch between Admin/User views.
+  - User mode: pick "user"; username is fixed to `user`, and you must enter the user password. Can view, search, summarize, and get recommendations.
+  - Admin mode: pick "admin"; username is fixed to `admin`, and you must enter the admin password. Enables admin actions (e.g., delete books) and a toggle to switch between Admin/User views.
 - Credentials come from environment variables:
-  - `USER_PASSWORD` (default: `user`)
-  - `ADMIN_USERNAME` (default: `admin`)
+  - `USER_PASSWORD` (default: `1234`)
   - `ADMIN_PASSWORD` (default: `admin`)
 - Example (PowerShell):
-  - `$env:USER_PASSWORD = "user-pass"; $env:ADMIN_USERNAME = "admin"; $env:ADMIN_PASSWORD = "admin-pass"; streamlit run app_ui.py`
+  - `$env:USER_PASSWORD = "1234"; $env:ADMIN_PASSWORD = "admin-pass"; streamlit run app_ui.py`
 ## Features
 - Flask REST API with CRUD for books
 - SQLite via SQLAlchemy; auto-creates `library.db`

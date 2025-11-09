@@ -7,8 +7,12 @@ import streamlit as st
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:5000")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-USER_PASSWORD = os.environ.get("USER_PASSWORD", "user")
+# Admin username is fixed for simplicity
+ADMIN_USERNAME = "admin"
+# User username is fixed for simplicity
+USER_USERNAME = "user"
+# Easy default password for user mode (override with env var)
+USER_PASSWORD = os.environ.get("USER_PASSWORD", "1234")
 
 
 def _init_session():
@@ -112,7 +116,7 @@ def main():
             if login_as == "admin":
                 username = st.text_input("Username", value=ADMIN_USERNAME, disabled=True)
             else:
-                username = st.text_input("Username")
+                username = st.text_input("Username", value=USER_USERNAME, disabled=True)
             password = st.text_input("Password", type="password")
             if st.button("Sign in"):
                 if not username.strip():
@@ -126,13 +130,13 @@ def main():
                     else:
                         st.error("Invalid admin credentials")
                 else:
-                    if password == USER_PASSWORD:
-                        st.session_state["auth_username"] = username.strip()
+                    if username.strip() == USER_USERNAME and password == USER_PASSWORD:
+                        st.session_state["auth_username"] = USER_USERNAME
                         st.session_state["auth_role"] = "user"
                         st.session_state["view_mode"] = "user"
                         st.experimental_rerun()
                     else:
-                        st.error("Invalid user password")
+                        st.error("Invalid user credentials")
 
         is_admin = st.session_state.get("view_mode") == "admin"
 
