@@ -120,3 +120,34 @@ def recommend_books(book_id: int):
     return jsonify({"book_id": book_id, "recommendations": results})
 
 
+@books_bp.post('/search-by-description')
+def search_by_description():
+    """Find the most relevant books based on user description using AI."""
+    data = request.get_json(force=True)
+    user_description = data.get('description', '').strip()
+    if not user_description:
+        return jsonify({"error": "'description' is required"}), 400
+
+    top_k = int(data.get('top_k', 5))
+    
+    all_books = Book.query.all()
+    if not all_books:
+        return jsonify({"results": []})
+
+    # Build corpus from all books
+    corpus = [((b.description or '') + '\n' + (b.content or '')).strip() for b in all_books]
+    
+    # Find most similar books
+    ranking = top_k_similar(user_description, corpus, top_k=top_k)
+
+    # Map indices back to book ids
+    results = []
+    for idx, score in ranking:
+        b = all_books[idx]
+        payload = serialize_book(b)
+        payload["score"] = score
+        results.append(payload)
+
+    return jsonify({"query": user_description, "results": results})
+
+

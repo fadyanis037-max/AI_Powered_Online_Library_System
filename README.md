@@ -101,11 +101,25 @@ Get-NetTCPConnection -LocalPort 8501 -ErrorAction SilentlyContinue | ForEach-Obj
 - `DELETE /api/books/<id>` — delete
 - `POST /api/books/<id>/summarize` — body `{max_length?, min_length?}` -> `{summary}`
 - `GET /api/books/<id>/recommendations?top_k=5` -> similar books
+- `POST /api/books/search-by-description` — body `{description, top_k?}` -> AI-powered search results
+
+## Features
+
+### AI-Powered Search
+- Users can describe what they're looking for in natural language
+- The system uses Sentence Transformers to find the most relevant books based on semantic similarity
+- Results are ranked by relevance score
+
+### Auto-Summarization
+- When a user selects a book, the system automatically generates a summary using BART
+- Summaries are cached to avoid regeneration on subsequent views
+- Provides a quick overview of the book's content
 
 ## Notes
 - For recommendations, book text comes from `description` + `content`.
 - Summarization prefers `content`, falls back to `description`.
 - On first run, model weights are downloaded during backend startup, so expect a longer boot time rather than a slow first request.
+- AI models (BART and Sentence Transformers) are preloaded at startup to minimize user wait time.
 
 ## License
 MIT
