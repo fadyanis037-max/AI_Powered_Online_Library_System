@@ -6,7 +6,7 @@ import streamlit as st
 
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:5000")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "1234")
 # Admin username is fixed for simplicity
 ADMIN_USERNAME = "admin"
 # User username is fixed for simplicity

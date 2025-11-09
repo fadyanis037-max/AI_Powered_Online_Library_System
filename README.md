@@ -98,15 +98,15 @@ Get-NetTCPConnection -LocalPort 8501 -ErrorAction SilentlyContinue | ForEach-Obj
 ## Credentials (Quick Start)
 - Admin
   - Username: `admin`
-  - Password: value of `ADMIN_PASSWORD` (default: `admin`)
+  - Password: value of `ADMIN_PASSWORD` (default: `1234`)
 - User
   - Username: `user`
   - Password: value of `USER_PASSWORD` (default: `1234`)
 
 Change passwords via environment variables if you want before launching the UI:
-- PowerShell example: `$env:USER_PASSWORD = "1234"; $env:ADMIN_PASSWORD = "admin-pass"; streamlit run app_ui.py`
+- PowerShell example: `$env:USER_PASSWORD = "1234"; $env:ADMIN_PASSWORD = "1234"; streamlit run app_ui.py`
 
-## API Overview
+## API Overview(optional, try the UI is better)
 
 - `GET /api/books/` — list books, optional `?q=search`
 - `GET /api/books/<id>` — get a book
