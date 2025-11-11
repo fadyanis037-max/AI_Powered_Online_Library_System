@@ -124,7 +124,7 @@ Change passwords via environment variables if you want before launching the UI:
 - The system uses Sentence Transformers to find the most relevant books based on semantic similarity
 - Results are ranked by relevance score
 
-### Auto-Summarization
+### Summarization
 - summarizing feature may take 3 mins to see the result of the book as it's a large model
 - When a user selects a book, the system automatically generates a summary using BART
 - Summaries are cached to avoid regeneration on subsequent views
